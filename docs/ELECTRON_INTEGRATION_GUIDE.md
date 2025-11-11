@@ -4,6 +4,8 @@
 
 This comprehensive guide shows you how to integrate Google ImageFX into your Electron-based application (like StoryFramer) to generate images seamlessly without relying on the official ImageFX website interface.
 
+**⚠️ Important Note**: This repository (imagefx-api) serves as a **reference implementation** showing how authentication and API communication work. The methods described in this guide are designed to help you implement your own direct integration using current best practices, not to depend on this npm package. You should research and use the most up-to-date authentication and API communication methods available.
+
 ## Table of Contents
 
 1. [Overview](#overview)

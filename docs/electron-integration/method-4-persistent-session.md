@@ -23,10 +23,11 @@ This method combines authentication (from Method 1 or 2) with intelligent sessio
 
 ```bash
 npm install electron
-npm install @rohitaryal/imagefx-api
 npm install electron-store
 npm install crypto-js  # For encryption
 ```
+
+**⚠️ Note**: This guide shows architectural patterns for session management. You should implement your own ImageFX API communication layer based on current API endpoints. Research the latest methods using Context7, MCP servers, and browser DevTools.
 
 ## Implementation
 

@@ -23,10 +23,11 @@ This method allows users to import cookies from their external browser (Chrome, 
 ## Prerequisites
 
 ```bash
-npm install @rohitaryal/imagefx-api
 npm install electron
 npm install electron-store  # For storing imported cookies
 ```
+
+**⚠️ Note**: This repository serves as a reference for understanding how cookie-based authentication works. Implement your own API communication based on current ImageFX endpoints and best practices.
 
 ## User Setup
 

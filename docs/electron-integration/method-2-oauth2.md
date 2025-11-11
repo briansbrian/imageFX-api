@@ -24,9 +24,10 @@ This method implements a proper OAuth2 flow using Google's official Identity Ser
 
 ```bash
 npm install electron
-npm install @rohitaryal/imagefx-api
 npm install electron-store  # For secure token storage
 ```
+
+**⚠️ Note**: This guide provides a reference implementation. You should research current OAuth2 best practices and Google's latest authentication methods. Use MCP servers, Context7, and other modern research tools to implement the most up-to-date and secure authentication flow.
 
 ## Google Cloud Setup
 

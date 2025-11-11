@@ -22,8 +22,9 @@ This method uses Electron's `BrowserWindow` to handle Google authentication in t
 
 ```bash
 npm install electron
-npm install @rohitaryal/imagefx-api
 ```
+
+**⚠️ Note**: This guide shows the core authentication and API communication approach. The `@rohitaryal/imagefx-api` package is used as a **reference** to understand how ImageFX API works. You should implement your own API communication layer based on current API endpoints and best practices, or use context7, MCP servers, and other modern tools to research and implement the most up-to-date integration methods.
 
 ## Implementation
 
@@ -134,17 +135,26 @@ export class GoogleAuthManager {
 }
 ```
 
-### Step 2: Create ImageFX Service Wrapper
+### Step 2: Create ImageFX API Communication Layer
 
 Create `src/services/ImageFXService.ts`:
 
+**Note**: This implementation shows the API structure. You should research the current ImageFX API endpoints and implement based on up-to-date documentation.
+
 ```typescript
-import { ImageFX } from '@rohitaryal/imagefx-api';
 import { GoogleAuthManager } from '../auth/GoogleAuthManager';
+
+interface GenerateImageOptions {
+    count?: number;
+    model?: 'IMAGEN_3' | 'IMAGEN_3_1' | 'IMAGEN_3_5';
+    aspectRatio?: 'IMAGE_ASPECT_RATIO_SQUARE' | 'IMAGE_ASPECT_RATIO_PORTRAIT' | 'IMAGE_ASPECT_RATIO_LANDSCAPE';
+    seed?: number;
+}
 
 export class ImageFXService {
     private authManager: GoogleAuthManager;
-    private imageFX: ImageFX | null = null;
+    private cookies: string = '';
+    private token: string = '';
 
     constructor() {
         this.authManager = new GoogleAuthManager();
@@ -156,36 +166,110 @@ export class ImageFXService {
     async initialize(): Promise<void> {
         if (!this.authManager.hasCookies()) {
             console.log('No cookies found, starting authentication...');
-            const cookies = await this.authManager.authenticate();
+            this.cookies = await this.authManager.authenticate();
             console.log('Authentication successful!');
+        } else {
+            this.cookies = this.authManager.getCookies();
         }
 
-        const cookies = this.authManager.getCookies();
-        this.imageFX = new ImageFX(cookies);
+        // Fetch session token from ImageFX API
+        await this.refreshSession();
+    }
+
+    /**
+     * Refresh session token
+     */
+    private async refreshSession(): Promise<void> {
+        const response = await fetch('https://labs.google/fx/api/auth/session', {
+            headers: {
+                'Cookie': this.cookies,
+                'Origin': 'https://labs.google',
+                'Referer': 'https://labs.google/fx/tools/image-fx',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to refresh session');
+        }
+
+        const sessionData = await response.json();
+        this.token = sessionData.access_token;
     }
 
     /**
      * Generate an image from a text prompt
+     * 
+     * Research current API endpoints and structure from:
+     * - Browser DevTools Network tab
+     * - Context7 for API documentation
+     * - MCP servers for real-time API info
      */
-    async generateImage(prompt: string, options?: {
-        count?: number;
-        model?: string;
-        aspectRatio?: string;
-        seed?: number;
-    }): Promise<Array<{ save: (path: string) => string; mediaID: string }>> {
-        if (!this.imageFX) {
+    async generateImage(prompt: string, options?: GenerateImageOptions): Promise<Array<{
+        imageData: string;
+        mediaID: string;
+        save: (path: string) => string;
+    }>> {
+        if (!this.token) {
             throw new Error('Service not initialized. Call initialize() first.');
         }
 
+        // Construct request body based on current API structure
+        const requestBody = {
+            prompt: prompt,
+            numImages: options?.count || 1,
+            model: options?.model || 'IMAGEN_3_5',
+            aspectRatio: options?.aspectRatio || 'IMAGE_ASPECT_RATIO_SQUARE',
+            seed: options?.seed || Math.floor(Math.random() * 1000000)
+        };
+
         try {
-            return await this.imageFX.generateImage(prompt);
+            const response = await fetch('https://aisandbox-pa.googleapis.com/v1:runImageFx', {
+                method: 'POST',
+                headers: {
+                    'Cookie': this.cookies,
+                    'Authorization': `Bearer ${this.token}`,
+                    'Origin': 'https://labs.google',
+                    'Referer': 'https://labs.google/fx/tools/image-fx',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            // Parse response and create image objects
+            // This structure may vary - research current API response format
+            const images = data.imagePanels?.[0]?.generatedImages || [];
+            
+            return images.map((img: any) => ({
+                imageData: img.image?.imageBytes || '',
+                mediaID: img.image?.mediaKey || '',
+                save: (savePath: string) => {
+                    // Implement image saving logic
+                    const fs = require('fs');
+                    const path = require('path');
+                    const filename = `${Date.now()}_${img.image?.mediaKey}.png`;
+                    const fullPath = path.join(savePath, filename);
+                    
+                    // Decode base64 and save
+                    const imageBuffer = Buffer.from(img.image?.imageBytes || '', 'base64');
+                    fs.writeFileSync(fullPath, imageBuffer);
+                    
+                    return fullPath;
+                }
+            }));
         } catch (error) {
             // If authentication fails, try to re-authenticate
             if (error instanceof Error && error.message.includes('Authentication')) {
                 console.log('Session expired, re-authenticating...');
                 this.authManager.clearCookies();
                 await this.initialize();
-                return await this.imageFX.generateImage(prompt);
+                return await this.generateImage(prompt, options);
             }
             throw error;
         }
@@ -195,9 +279,16 @@ export class ImageFXService {
      * Check if service is ready to generate images
      */
     isReady(): boolean {
-        return this.imageFX !== null;
+        return this.token.length > 0;
     }
 }
+```
+
+**🔍 Research Tips**: 
+- Use browser DevTools Network tab when accessing https://labs.google/fx/tools/image-fx
+- Check request/response formats for the latest API structure
+- Use Context7 or similar tools to get current API documentation
+- Monitor for API changes and updates
 ```
 
 ### Step 3: Integrate with Main Process

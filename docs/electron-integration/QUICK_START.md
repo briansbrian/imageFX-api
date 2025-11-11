@@ -2,10 +2,17 @@
 
 Get ImageFX running in your Electron app in **15 minutes**.
 
+**⚠️ Important**: This guide uses the imagefx-api package as a **reference implementation** to help you understand how authentication and API communication work. For production apps, you should:
+1. Research current ImageFX API endpoints using browser DevTools
+2. Use Context7, MCP servers, or similar tools for up-to-date API documentation
+3. Implement your own API communication layer based on current best practices
+4. Monitor for API changes and update accordingly
+
 ## Step 1: Install Dependencies (2 min)
 
 ```bash
-npm install @rohitaryal/imagefx-api electron electron-store
+npm install electron electron-store
+# Optional: npm install @rohitaryal/imagefx-api  (for reference only)
 ```
 
 ## Step 2: Choose Your Method (1 min)
@@ -69,14 +76,16 @@ module.exports = { GoogleAuth };
 
 ### Update Main Process (`main.js`)
 
+**Note**: This example shows the basic structure. Implement your own ImageFX API communication based on current endpoints.
+
 ```javascript
 const { app, BrowserWindow, ipcMain } = require('electron');
-const { ImageFX } = require('@rohitaryal/imagefx-api');
 const { GoogleAuth } = require('./auth');
 const path = require('path');
 
 let mainWindow;
-let imageFX;
+let cookies = '';
+let token = '';
 const auth = new GoogleAuth();
 
 function createWindow() {
@@ -96,8 +105,15 @@ function createWindow() {
 // IPC Handlers
 ipcMain.handle('imagefx:login', async () => {
     try {
-        const cookies = await auth.authenticate();
-        imageFX = new ImageFX(cookies);
+        cookies = await auth.authenticate();
+        
+        // Get session token
+        const response = await fetch('https://labs.google/fx/api/auth/session', {
+            headers: { 'Cookie': cookies }
+        });
+        const sessionData = await response.json();
+        token = sessionData.access_token;
+        
         return { success: true };
     } catch (error) {
         return { success: false, error: error.message };
@@ -106,12 +122,30 @@ ipcMain.handle('imagefx:login', async () => {
 
 ipcMain.handle('imagefx:generate', async (event, prompt) => {
     try {
-        const images = await imageFX.generateImage(prompt);
-        const saved = images.map(img => {
-            const savePath = path.join(app.getPath('userData'), 'images');
-            return img.save(savePath);
+        // Call ImageFX API - research current endpoint structure
+        const response = await fetch('https://aisandbox-pa.googleapis.com/v1:runImageFx', {
+            method: 'POST',
+            headers: {
+                'Cookie': cookies,
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ prompt, numImages: 1 })
         });
-        return { success: true, paths: saved };
+        
+        const data = await response.json();
+        const images = data.imagePanels?.[0]?.generatedImages || [];
+        
+        // Save images
+        const fs = require('fs');
+        const savedPaths = images.map((img, i) => {
+            const savePath = path.join(app.getPath('userData'), 'images', `${Date.now()}_${i}.png`);
+            fs.mkdirSync(path.dirname(savePath), { recursive: true });
+            fs.writeFileSync(savePath, Buffer.from(img.image?.imageBytes, 'base64'));
+            return savePath;
+        });
+        
+        return { success: true, paths: savedPaths };
     } catch (error) {
         return { success: false, error: error.message };
     }

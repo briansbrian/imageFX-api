@@ -1,13 +1,31 @@
 # ImageFX Integration for Electron Applications
 
-This guide provides multiple methods for seamlessly integrating Google ImageFX into your Electron-based application (like StoryFramer). Each method addresses the challenge of authenticating with Google and maintaining a session for image generation without displaying the ImageFX UI.
+## ⚠️ IMPORTANT: This Repository is a Reference Only
+
+**This repository (`imagefx-api`) demonstrates ONE approach** to accessing ImageFX and serves as a **reference implementation** to understand the concepts. For your production Electron application:
+
+### You Should:
+✅ **Research current API endpoints** using browser DevTools  
+✅ **Use Context7, MCP servers** to find up-to-date API documentation  
+✅ **Implement your own API communication** based on current best practices  
+✅ **Monitor for API changes** and update your implementation  
+✅ **Review [API Research Guide](./API_RESEARCH_GUIDE.md)** for detailed research methods
+
+### You Should NOT:
+❌ Depend on this npm package for production use  
+❌ Assume the API endpoints in examples are current  
+❌ Copy code without verifying it works with current APIs  
+
+---
+
+This guide provides **architectural patterns and approaches** for seamlessly integrating Google ImageFX into your Electron-based application (like StoryFramer). Each method addresses the challenge of authenticating with Google and maintaining a session for image generation without displaying the ImageFX UI.
 
 ## Overview
 
 Google ImageFX requires authentication through a Google account. For Electron apps, we need to:
 1. Authenticate the user with their Google account
 2. Extract and manage session cookies
-3. Use those cookies to generate images via the ImageFX API
+3. Research and implement communication with current ImageFX API endpoints
 4. Maintain the session for continued use
 
 ## Available Methods

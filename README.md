@@ -168,6 +168,13 @@ More examples are at: [/examples](https://github.com/rohitaryal/imageFX-api/tree
 
 Looking to integrate ImageFX into your Electron desktop application? We've got you covered!
 
+**⚠️ Important Note**: This repository serves as a **reference implementation** showing how ImageFX authentication and API communication work. The Electron integration guides provide architectural patterns and approaches, but you should:
+
+- Research current ImageFX API endpoints using browser DevTools
+- Use Context7, MCP servers, or similar tools for up-to-date API documentation  
+- Implement your own API communication layer based on current best practices
+- Monitor for API changes and update your implementation accordingly
+
 **[📖 Complete Electron Integration Guide](docs/ELECTRON_INTEGRATION_GUIDE.md)**
 
 ### Quick Links
@@ -175,21 +182,21 @@ Looking to integrate ImageFX into your Electron desktop application? We've got y
 - **[🚀 Quick Start (15 minutes)](docs/electron-integration/QUICK_START.md)** - Get up and running fast
 - **[🔐 Authentication Methods](docs/electron-integration/README.md)** - Choose the right auth approach
 - **[🔧 Troubleshooting](docs/electron-integration/TROUBLESHOOTING.md)** - Fix common issues
-- **[📦 Example App](examples/electron/)** - Complete working example
+- **[📋 Methods Comparison](docs/electron-integration/METHODS_COMPARISON.md)** - Compare different approaches
 
 ### Key Features
 
-- ✅ Multiple authentication methods (Hidden Browser, OAuth2, Cookie Import, Persistent Session)
-- ✅ Automatic session management and refresh
-- ✅ Secure credential storage with encryption
-- ✅ Cross-platform support (Windows, macOS, Linux)
-- ✅ Full TypeScript support
-- ✅ Production-ready code examples
+- ✅ Multiple authentication strategies (Hidden Browser, OAuth2, Cookie Import, Persistent Session)
+- ✅ Architectural patterns for session management and refresh
+- ✅ Security best practices and encryption patterns
+- ✅ Cross-platform implementation guidance (Windows, macOS, Linux)
+- ✅ Full TypeScript and JavaScript examples
+- ✅ Production-ready architectural patterns
 
 ### Use Cases
 
 Perfect for integrating ImageFX into:
-- 🎬 **Storyboarding apps** - Generate scene frames automatically
+- 🎬 **Storyboarding apps** (like StoryFramer) - Generate scene frames automatically
 - 🎨 **Creative tools** - Add AI image generation to your workflow
 - 📝 **Content creation apps** - Illustrate ideas on the fly
 - 🎮 **Game development tools** - Generate concept art and assets
