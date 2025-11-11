@@ -1,0 +1,28 @@
+{
+  "name": "imagefx-electron-example",
+  "version": "1.0.0",
+  "description": "Example Electron app integrating ImageFX",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && electron .",
+    "dev": "tsc && electron . --dev"
+  },
+  "keywords": [
+    "electron",
+    "imagefx",
+    "image-generation"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "electron": "^28.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@rohitaryal/imagefx-api": "^2.1.1",
+    "crypto-js": "^4.2.0",
+    "electron-store": "^8.1.0"
+  }
+}
