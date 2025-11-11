@@ -12,6 +12,7 @@ npm i -g @rohitaryal/imagefx-api
 1. Text to image using `IMAGEN_3/4`
 2. Image to text
 3. Command line support
+4. **[Electron app integration](docs/ELECTRON_INTEGRATION_GUIDE.md)** - Seamlessly integrate ImageFX into your desktop apps
 
 ## Usage
 `imagefx` can be invoked through both command line and as a module.
@@ -162,6 +163,36 @@ Options:
 
 More examples are at: [/examples](https://github.com/rohitaryal/imageFX-api/tree/main/examples)
 </details>
+
+## Electron Integration
+
+Looking to integrate ImageFX into your Electron desktop application? We've got you covered!
+
+**[📖 Complete Electron Integration Guide](docs/ELECTRON_INTEGRATION_GUIDE.md)**
+
+### Quick Links
+
+- **[🚀 Quick Start (15 minutes)](docs/electron-integration/QUICK_START.md)** - Get up and running fast
+- **[🔐 Authentication Methods](docs/electron-integration/README.md)** - Choose the right auth approach
+- **[🔧 Troubleshooting](docs/electron-integration/TROUBLESHOOTING.md)** - Fix common issues
+- **[📦 Example App](examples/electron/)** - Complete working example
+
+### Key Features
+
+- ✅ Multiple authentication methods (Hidden Browser, OAuth2, Cookie Import, Persistent Session)
+- ✅ Automatic session management and refresh
+- ✅ Secure credential storage with encryption
+- ✅ Cross-platform support (Windows, macOS, Linux)
+- ✅ Full TypeScript support
+- ✅ Production-ready code examples
+
+### Use Cases
+
+Perfect for integrating ImageFX into:
+- 🎬 **Storyboarding apps** - Generate scene frames automatically
+- 🎨 **Creative tools** - Add AI image generation to your workflow
+- 📝 **Content creation apps** - Illustrate ideas on the fly
+- 🎮 **Game development tools** - Generate concept art and assets
 
 ## Help
 <details>
